@@ -31,7 +31,9 @@
     text-align: center;
     width: 34px;
   }
-  
+  .bold {
+    font-weight: bold;
+  }
   .square:focus {
     outline: none;
   }
