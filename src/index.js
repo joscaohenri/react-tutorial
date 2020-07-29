@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 
 function Square(props) {
     return (
@@ -56,6 +57,7 @@ class Game extends React.Component {
       p1Char: 'J',
       p2Char: 'R',
       stepNumber: 0,
+      ascendingOrder: true,
     };
   }
 
@@ -66,7 +68,7 @@ class Game extends React.Component {
     })
   }
 
-  handleClick(i) {
+  handleSquareClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -87,13 +89,18 @@ class Game extends React.Component {
       stepNumber: history.length
     });
   }
-
+  setSelected(bool){
+    this.setState({
+      ascendingOrder: bool,
+    })
+  }
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
-    const moves = history.map((step, move) => {
+    const selected = this.state.ascendingOrder;
+    const orderText = "Ascending Order";
+    let moves = history.map((step, move) => {
       const desc = move ? 'Go to move #' + move + 
                           `(${step.column},${step.row})`: 'Go to game start';
       const isBold = (current === step) ? "bold" : "";
@@ -107,8 +114,11 @@ class Game extends React.Component {
         </li>
       );
     });
-
-
+    // If the ascending order is set to false, reverse the array.    
+    if(!this.state.ascendingOrder)
+    {
+      moves = moves.reverse()
+    }
     let status;
     if(winner){
       status = `The winner is ${winner}.`
@@ -124,12 +134,18 @@ class Game extends React.Component {
         <div className="game-board">
           <Board 
             squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
+            onClick={(i) => this.handleSquareClick(i)}
           />
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <ToggleButton value="check"
+                        selected={this.state.ascendingOrder}
+                        onChange={() => this.setSelected(!selected)}                                  
+                        >
+                        {orderText}                        
+          </ToggleButton>
+          <ul>{moves}</ul>
         </div>
       </div>
     );
