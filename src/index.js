@@ -4,8 +4,9 @@ import './index.css';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 
 function Square(props) {
+    const name = props.winner? "square highlight" : "square";
     return (
-      <button className="square" 
+      <button className={name} 
               onClick={() => props.onClick()}
       >
         {props.value}
@@ -19,6 +20,7 @@ class Board extends React.Component {
   renderSquare(i) {
     return (<Square value={this.props.squares[i]}
                     onClick={() => this.props.onClick(i)}
+                    winner={this.props.highlights[i]}
 
     />);
   }
@@ -97,9 +99,19 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const winningSequence = calculateWinner(current.squares);
     const selected = this.state.ascendingOrder;
     const orderText = "Ascending Order";
+    const highlights = Array(9).fill(null);
+    let winner;
+    if(winningSequence)
+    {
+      winner = winningSequence.winner;
+      highlights[winningSequence.a] = true;
+      highlights[winningSequence.b] = true;
+      highlights[winningSequence.c] = true;
+    }
+
     let moves = history.map((step, move) => {
       const desc = move ? 'Go to move #' + move + 
                           `(${step.column},${step.row})`: 'Go to game start';
@@ -123,9 +135,12 @@ class Game extends React.Component {
     if(winner){
       status = `The winner is ${winner}.`
     }
-    else{
+    else if (moves.length < 10){
       status = `Next player: 
         ${this.state.p1IsNext ? this.state.p1Char : this.state.p2Char}`;
+    }
+    else {
+      status = 'Draw';
     }
 
 
@@ -135,6 +150,7 @@ class Game extends React.Component {
           <Board 
             squares={current.squares}
             onClick={(i) => this.handleSquareClick(i)}
+            highlights={highlights}
           />
         </div>
         <div className="game-info">
@@ -173,7 +189,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {a, b, c, winner: squares[a]};
     }
   }
   return null;

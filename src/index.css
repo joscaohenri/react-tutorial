@@ -30,6 +30,11 @@
     padding: 0;
     text-align: center;
     width: 34px;
+
+    text-decoration: dashed;
+  }
+  .highlight {
+    background: red;
   }
   .bold {
     font-weight: bold;
