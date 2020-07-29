@@ -135,7 +135,7 @@ class Game extends React.Component {
     if(winner){
       status = `The winner is ${winner}.`
     }
-    else if (moves.length < 10){
+    else if ((moves.length < 10) || this.state.stepNumber < 9){
       status = `Next player: 
         ${this.state.p1IsNext ? this.state.p1Char : this.state.p2Char}`;
     }
